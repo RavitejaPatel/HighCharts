@@ -1,0 +1,246 @@
+<html>
+    <head>
+      <style type="text/css">
+        .highcharts-figure,
+.highcharts-data-table table {
+  min-width: 320px;
+  max-width: 800px;
+  margin: 1em auto;
+}
+
+.highcharts-data-table table {
+  font-family: Verdana, sans-serif;
+  border-collapse: collapse;
+  border: 1px solid #ebebeb;
+  margin: 10px auto;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
+}
+
+.highcharts-data-table th {
+  font-weight: 600;
+  padding: 0.5em;
+}
+
+.highcharts-data-table td,
+.highcharts-data-table th,
+.highcharts-data-table caption {
+  padding: 0.5em;
+}
+
+.highcharts-data-table thead tr,
+.highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
+}
+      </style>
+        <!-- <link rel="stylesheet" href="Features.css"> -->
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/networkgraph.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        
+    </head>
+<body>
+     <figure class="highcharts-figure">
+      <div id="container" >
+        <script type= "text/javascript" >
+          // Add the nodes option through an event call. We want to start with the parent
+// item and apply separate colors to each child element, then the same color to
+// grandchildren.
+
+// Assuming you have an existing Highcharts chart object named 'chart'
+
+// Set the default colors for the series
+// Highcharts.setOptions({
+//   colors: ['#7cb5ec', '#f45b5b', '#f45b5b'] // Blue, Orange, Red
+// });
+
+// // Define the series data
+// var seriesData = [
+//   { name: 'Series 1', data: [1, 2, 3, 4, 5] },
+//   { name: 'Series 2', data: [6, 7, 8, 9, 10] },
+//   { name: 'Series 3', data: [11, 12, 13, 14, 15] }
+// ];
+
+// // Define the faulty nodes
+// var faultyNodes = [3, 6, 12];
+
+// // Iterate over the series and highlight the faulty nodes
+// seriesData.forEach(function(series, index)
+// {
+//     console.log("test hello"+ JSON.stringify(series))
+//     console.log("test hello-=>"+JSON.stringify(index))
+
+//   series.data.forEach(function(dataPoint, dataPointIndex) {
+//     if (faultyNodes.includes(dataPoint))
+//     {
+//       console.log(dataPoint+"====="+faultyNodes)
+//       series.data[dataPointIndex] = {
+//         y: dataPoint,
+//         color: index === 0 ? '#f45b5b' : '#ffa500' // Red for first series, Orange for others
+//       };
+//     }
+//   });
+// });
+
+// // Update the chart with the modified series data
+// chart.update({
+//   series: seriesData
+// });
+
+
+Highcharts.addEvent(
+    Highcharts.Series,
+    'afterSetOptions',
+    function (e) 
+    {
+      var colors = Highcharts.getOptions().colors,
+        i = 0,
+        nodes = {};
+  
+      if
+       (
+        this instanceof Highcharts.Series.types.networkgraph && e.options.id === 'lang-tree') 
+        {
+        e.options.data.forEach(function (link) {
+  //debugger
+  //console.log(link[0]+"========" )
+          if (link[0] === 'cr7.northeurope1-a.control.database.windows.net|13.74.104.113')
+           {
+           
+            nodes['cr7.northeurope1-a.control.database.windows.net|13.74.104.113'] =
+             {
+              id: 'cr7.northeurope1-a.control.database.windows.net|13.74.104.113',
+              marker: {
+                radius: 20
+              }
+            };
+            nodes[link[1]] = {
+              id: link[1],
+              marker: {
+                radius: 10
+              },
+              color: colors[i++]
+            };
+          } 
+          else if (nodes[link[0]] && nodes[link[0]].color)
+          {
+            console.log("inside"+nodes[link[0]])
+            nodes[link[1]] = {
+              id: link[1],
+              color: nodes[link[0]].color
+            };
+          }
+        });
+  
+        e.options.nodes = Object.keys(nodes).map(function (id)
+         {
+          return nodes[id];
+        });
+        console.log( e.options.nodes);
+      }
+    }
+  );
+
+
+
+
+
+
+
+
+
+Highcharts.chart('container', {
+    chart: {
+      type: 'networkgraph',
+      height: '100%'
+    },
+    title: {
+      text: 'Connectivity Azure Components'
+    },
+    subtitle: {
+      text: 'DFS Graph paths'
+    },
+    plotOptions: {
+      networkgraph: {
+        keys: ['from', 'to'],
+        layoutAlgorithm: {
+          enableSimulation: true,
+          friction: -0.9
+        }
+      }
+    },
+    series: [{
+      accessibility: {
+        enabled: false
+      },
+      dataLabels: {
+        enabled: true,
+        linkFormat: '',
+        style:{
+          fontSize: '0.8em',
+          fontWeight: 'normal'
+        }
+      },
+     
+
+    // Define the series data
+    data : [
+//   { name: 'Series 1', data: [1, 2, 3, 4, 5] },
+//   { name: 'Series 2', data: [6, 7, 8, 9, 10] },
+//   { name: 'Series 3', data: [11, 12, 13, 14, 15] }
+
+ [1, 2],
+ [1, 3],
+ [4, 5],
+ [1, 4],
+ [4, 8],
+ [8, 9],
+ [9, 10],
+ [9, 13] 
+],
+
+// Define the faulty nodes
+ faultyNodes : [1, 2, 3],
+
+
+
+
+
+
+    }]
+  });
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </script>
+      </div>  
+    </figure>
+</body>
+</html>
+
